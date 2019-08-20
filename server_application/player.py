@@ -28,7 +28,7 @@ class Player:
         )
 
     @property
-    def unused_fields(self):
+    def unused_fields(self) -> List[str]:
         return self.upper_section.unused_fields + self.lower_section.unused_fields
 
     def is_finished(self):

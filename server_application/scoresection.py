@@ -38,11 +38,11 @@ class ScoreSectionBase(ABC):
         return dict_repr
 
     @property
-    def unused_fields(self):
+    def unused_fields(self) -> List[str]:
         return [name for name, score in self if score is None]
 
     @property
-    def field_names(self):
+    def field_names(self) -> List[str]:
         return [name for name, _ in self]
 
 @dataclass(init=False, repr=False)
