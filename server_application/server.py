@@ -1,10 +1,15 @@
 from flask import Flask
 import json
+import random
+from collections import Counter
+import rules
+import example_dice
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def root():
-    return json.dumps({
-        "dice":[4,2,6,4,9]
-    })
+    #dice = rules.roll_dice()
+
+    return example_dice.points()
