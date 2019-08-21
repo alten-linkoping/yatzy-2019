@@ -132,6 +132,6 @@ dmypy.json
 .pyre/
 
 # Qt build folder
-/build-Yatzy_front_v2-Desktop_Qt_5_12_4_clang_64bit-Debug/*
+/build-*/*
 
 # End of https://www.gitignore.io/api/flask
