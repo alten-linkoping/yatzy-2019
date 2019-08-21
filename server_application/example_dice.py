@@ -1,7 +1,15 @@
 import rules
 import json
+
+def roll_dice():
+    dice = []
+    for x in range(0, 5):
+        dice.append(random.randint(1, 6))
+    return dice
+
+
 def points():
-    dice = rules.roll_dice()
+    dice = roll_dice()
     return json.dumps({
         "dice": sorted(dice),
         "upper": {

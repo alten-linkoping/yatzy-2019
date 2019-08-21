@@ -1,27 +1,20 @@
 import random
+from typing import Optional, List
 from collections import Counter
 
-
-def roll_dice():
-    dice = []
-    for x in range(0, 5):
-        dice.append(random.randint(1, 6))
-    return dice
-
-
-def lower_section(dice, number):
+def lower_section(dice: List[int], number:int) -> Optional[int]:
     return dice.count(number)*number if dice.count(number)*number != 0 else None
 
 
-def small_straight(dice):
+def small_straight(dice: List[int]) -> Optional[int]:
     return 15 if sorted(dice) == [1, 2, 3, 4, 5] else None
 
 
-def large_straight(dice):
+def large_straight(dice: List[int]) -> Optional[int]:
     return 20 if sorted(dice) == [2, 3, 4, 5, 6] else None
 
 
-def one_pair(dice):
+def one_pair(dice: List[int]) -> Optional[int]:
     PairList = []
     for x in Counter(dice):
         if(Counter(dice)[x] >= 2):
@@ -31,7 +24,7 @@ def one_pair(dice):
     return None
 
 
-def two_pairs(dice):
+def two_pairs(dice: List[int]) -> Optional[int]:
     PairList = []
     for x in Counter(dice):
         if(Counter(dice)[x] >= 2):
@@ -41,21 +34,21 @@ def two_pairs(dice):
     return None
 
 
-def three_of_a_kind(dice):
+def three_of_a_kind(dice: List[int]) -> Optional[int]:
     DiceNumber = list(set([x for x in dice if dice.count(x) > 2]))
     return DiceNumber[0]*3 if DiceNumber else None
 
 
-def four_of_a_kind(dice):
+def four_of_a_kind(dice: List[int]) -> Optional[int]:
     DiceNumber = list(set([x for x in dice if dice.count(x) > 3]))
     return DiceNumber[0]*4 if DiceNumber else None
 
 
-def yatzy(dice):
+def yatzy(dice: List[int]) -> Optional[int]:
     return 50 if list(set([x for x in dice if dice.count(x) > 4])) else None
 
 
-def full_house(dice):
+def full_house(dice: List[int]) -> Optional[int]:
     numberOfOccurrences = Counter(dice)
     for x in numberOfOccurrences:
         if(numberOfOccurrences[x] > 2):
@@ -65,6 +58,5 @@ def full_house(dice):
 
     return None
 
-
-def chance(dice):
+def chance(dice: List[int]) -> int:
     return sum(dice)
