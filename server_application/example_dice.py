@@ -1,5 +1,6 @@
-import rules
 import json
+import random
+import rules
 
 def roll_dice():
     dice = []
