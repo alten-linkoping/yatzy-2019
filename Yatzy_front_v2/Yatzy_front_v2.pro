@@ -21,7 +21,6 @@ SOURCES += \
         dice_side.cpp \
         main.cpp \
         mainwindow.cpp \
-        scoreboard_model.cpp \
         startwindow.cpp
 
 # Default rules for deployment.
@@ -37,7 +36,6 @@ HEADERS += \
     dice.h \
     dice_side.h \
     mainwindow.h \
-    scoreboard_model.h \
     startwindow.h
 
 RESOURCES += \

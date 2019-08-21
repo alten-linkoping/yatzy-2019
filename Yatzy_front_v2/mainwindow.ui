@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1045</width>
-    <height>635</height>
+    <width>1100</width>
+    <height>697</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -106,7 +106,7 @@ color: rgb(128, 0, 2);
    <widget class="QPushButton" name="pushButton_Roll">
     <property name="geometry">
      <rect>
-      <x>750</x>
+      <x>800</x>
       <y>20</y>
       <width>201</width>
       <height>91</height>
@@ -125,19 +125,21 @@ font: 24pt &quot;.SF NS Text&quot;;</string>
      <rect>
       <x>40</x>
       <y>10</y>
-      <width>331</width>
-      <height>551</height>
+      <width>371</width>
+      <height>601</height>
      </rect>
     </property>
     <property name="styleSheet">
      <string notr="true">color: rgb(0, 0, 0);
+border-color: rgb(0, 0, 0);
+gridline-color: rgb(0, 0, 0);
 background-color: rgb(255, 255, 255);</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_EndTurn">
     <property name="geometry">
      <rect>
-      <x>540</x>
+      <x>590</x>
       <y>20</y>
       <width>141</width>
       <height>91</height>
@@ -157,7 +159,7 @@ font: 24pt &quot;.SF NS Text&quot;;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1045</width>
+     <width>1100</width>
      <height>22</height>
     </rect>
    </property>

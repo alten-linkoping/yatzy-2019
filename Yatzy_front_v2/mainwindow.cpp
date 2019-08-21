@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QHBoxLayout>
 #include <QPushButton>
+//#include <QDebug>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -9,10 +10,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //ui->tableView_scoreboard->setModel(model);
-    scoreboard_model MyScoreboradModel;
-        ui->tableView_scoreboard->setModel(&MyScoreboradModel);
-        ui->tableView_scoreboard->show();
+    this->Players.push_back("Emma");
+    this->Players.push_back("Liv");
+
+    this->draw_scoreboard();
 }
 
 MainWindow::~MainWindow()
@@ -172,4 +173,29 @@ void MainWindow::on_pushButton_EndTurn_clicked()
 
     }
 
+}
+
+void MainWindow::draw_scoreboard()
+{
+    std::vector<std::string> Combinations {"Ones", "Twos", "Threes", "Fours", "Fives", "Sixes", "Bonus","Sum","One Pair",
+                                           "Two Pairs","Three of a Kind   ","Four of a Kind ","Small Straight ","Large Straight ",
+                                           "Full House", "Chance", "YATZY", "Sum", "Total"};
+
+
+    for (int var = 0; var < 2; ++var) {
+        QStandardItem *it1 = new QStandardItem(QObject::tr(this->Players[var].c_str()));
+        this->mod->setHorizontalHeaderItem(var,it1);
+    }
+
+    for (int idx = 0; idx < Combinations.size(); idx++)
+    {
+        QStandardItem *it1 = new QStandardItem(QObject::tr(Combinations[idx].c_str()));
+        this->mod->setVerticalHeaderItem(idx,it1);
+        const QModelIndex index = this->mod->index(idx+1, 1);
+        this->mod->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
+        this->mod->setData(index, "0");
+    }
+
+    ui->tableView_scoreboard->setModel(this->mod);
+    ui->tableView_scoreboard->show();
 }

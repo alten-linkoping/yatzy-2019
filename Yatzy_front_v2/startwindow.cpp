@@ -20,7 +20,6 @@ void StartWindow::on_pushButton_PLAY_clicked()
     this->Players.push_back(Player.toStdString());
 
     MainWindow *w = new MainWindow;
-    w->Players = this->Players;
     w->show();
     this->hide();
 }

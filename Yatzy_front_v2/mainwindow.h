@@ -7,10 +7,11 @@
 #include <String>
 #include "dice_side.h"
 #include "dice.h"
-#include "scoreboard_model.h"
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <QStandardItem>
+#include <QStandardItemModel>
 
 namespace Ui {
 class MainWindow;
@@ -32,6 +33,8 @@ public:
     std::vector<int> locked_dice {0, 0, 0, 0, 0};
     std::vector<std::string> Players;
     int throws_left = 3;
+    QStandardItemModel *mod = new QStandardItemModel;
+    void draw_scoreboard();
 
 private slots:
     void on_pushButton_Roll_clicked();
