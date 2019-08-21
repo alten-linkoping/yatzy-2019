@@ -1,11 +1,11 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from scoresection import UpperSectionScore, LowerSectionScore
 
 class Player:
-    def __init__(self, name:str, upper_section: UpperSectionScore, lower_section:LowerSectionScore):
+    def __init__(self, name:str, upper_section: Optional[UpperSectionScore] = None, lower_section:Optional[LowerSectionScore] = None):
         self.name = name
-        self.upper_section = upper_section
-        self.lower_section = lower_section
+        self.upper_section = upper_section if upper_section is not None else UpperSectionScore()
+        self.lower_section = lower_section if lower_section is not None else LowerSectionScore()
 
     def total_score(self):
         return self.upper_section.total_score() + self.lower_section.total_score()
@@ -26,6 +26,13 @@ class Player:
             upper_section = self.upper_section.to_dict(),
             lower_section = self.lower_section.to_dict(),
         )
+
+    def possible_actions(self, dice: List[int]) -> Dict [str, int]:
+        return dict(
+                **self.lower_section.possible_actions(dice),
+                **self.upper_section.possible_actions(dice),
+            )
+
 
     @property
     def unused_fields(self) -> List[str]:
