@@ -25,6 +25,15 @@ def root():
 
 @app.route("/game", methods=["GET", "POST"])
 def new_game():
+    """
+        Creates a new game.
+        It also adds players, if a json containing the key "player_names" with a 
+        array of strings are sent with the request.
+        Request template:
+        {
+            "player_names": ["player1", "player2"]
+        }
+    """
     game_id, game = create_new_game()
     if request.json is not None and "player_names" in request.json:
         game.add_players(request.json["player_names"])
