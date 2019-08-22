@@ -25,7 +25,7 @@ def missing_json_field(field_name:str)-> Response:
 def missing_json_data() -> Response:
     return abort(Response("No JSON-data supplied"))
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def root():
     return jsonify(dict(
         dice=[1,2,3,4,5],
@@ -39,6 +39,16 @@ def error_test():
 
 @app.route("/game", methods=["GET", "POST"])
 def new_game():
+    data = request.data
+    my_dice = []
+    for x in range (0,len(data)):
+        my_dice.append(data[x])
+
+
+
+    print(my_dice)
+
+
     if request.json is None:
         return missing_json_data()
 

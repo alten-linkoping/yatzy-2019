@@ -13,6 +13,9 @@
 #include <ctime>
 #include <QStandardItem>
 #include <QStandardItemModel>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 namespace Ui {
 class MainWindow;
@@ -55,6 +58,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QNetworkAccessManager *manager;
+    QNetworkRequest request;
 };
 
 #endif // MAINWINDOW_H

@@ -3,7 +3,13 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QString>
-//#include <QDebug>
+#include <QDebug>
+#include <array>
+#include <QTextCodec>
+#include <QJsonDocument>
+#include <QJsonValue>
+#include <QJsonArray>
+#include <QJsonObject>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -11,6 +17,33 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    manager = new QNetworkAccessManager();
+    QObject::connect(manager, &QNetworkAccessManager::finished,
+        this, [=](QNetworkReply *reply) {
+            if (reply->error()) {
+                qDebug() << reply->errorString();
+                return;
+            }
+
+            QString answer = reply->readAll();
+
+            qDebug() << answer;
+
+            QJsonDocument json = QJsonDocument::fromJson(answer.toUtf8());
+            QJsonObject jsonObject = json.object();
+            QJsonArray jsonArrayUpper = jsonObject["msg"].toArray();
+
+           qDebug() << jsonObject["msg"];
+
+
+
+           // QJsonObject ar1 = jsonArrayUpper.at(0).toObject();
+           // qDebug() << ar1["chance"].toDouble();
+
+
+
+
     this->Players.push_back("Emma");
     this->Players.push_back("Liv");
 
@@ -18,11 +51,14 @@ MainWindow::MainWindow(QWidget *parent) :
     this->current_player = 0;
     ui->label_playername->setText(this->Players[this->current_player].c_str());
     ui->label_throws->setText(QString::fromStdString(std::to_string(this->throws_left)));
+    }
+);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete manager;
 }
 
 // Tärningssidor
@@ -39,6 +75,19 @@ static Dice_side DS6 {"border-image: url(:/Images/Images/Alea_6.png); color: rgb
 
 void MainWindow::roll_dice()
 {
+    request.setUrl(QUrl("http://127.0.0.1:5000/"));
+    request.setHeader( QNetworkRequest::ContentTypeHeader, "/" );
+
+
+
+
+    QByteArray dice;
+
+
+
+
+
+
     srand(time(nullptr));
 
     for (int idx = 0; idx < 5; ++idx)
@@ -47,8 +96,10 @@ void MainWindow::roll_dice()
         {
             this->Dice[idx] = std::rand() %6 + 1;
 
+            dice.push_back(this->Dice[idx]);
         }
     }
+    manager->post(request, dice);
 }
 
 void MainWindow::draw_dice()
