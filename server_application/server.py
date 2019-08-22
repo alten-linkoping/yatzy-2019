@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request, abort, Response
 from game import Game
 
 app = Flask(__name__)
+app.config.from_pyfile("flaskconfig.py")
 
 game_cnt = 0
 games: Dict[str,Game] = {}
@@ -31,6 +32,10 @@ def root():
         msg = "This is just a test route, to check for working connection."
         )
     )
+
+@app.route("/error_test")
+def error_test():
+    return str(app.config)
 
 @app.route("/game", methods=["GET", "POST"])
 def new_game():
@@ -118,3 +123,7 @@ def make_decision(game_id: str, player_name:str):
         scores = game.all_player_scores(),
         next_player=game.next_player(),
     )
+
+
+if __name__ == "__main__":
+    app.run(host=app.config["HOST"], port=app.config["PORT"])
