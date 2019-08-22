@@ -10,7 +10,7 @@ c = conn.cursor()
  #           points integer)
 #""")
 
-c.execute("INSERT INTO players VALUES('player1', 0)")
+c.execute("INSERT INTO players VALUES('player1', 2)")
 
 conn.commit()
 
