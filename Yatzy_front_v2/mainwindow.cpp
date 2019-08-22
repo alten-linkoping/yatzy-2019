@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QString>
 //#include <QDebug>
 
 
@@ -14,6 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->Players.push_back("Liv");
 
     this->draw_scoreboard();
+    this->current_player = 0;
+    ui->label_playername->setText(this->Players[this->current_player].c_str());
+    ui->label_throws->setText(QString::fromStdString(std::to_string(this->throws_left)));
 }
 
 MainWindow::~MainWindow()
@@ -86,6 +90,8 @@ void MainWindow::on_pushButton_Roll_clicked()
     {
         this->draw();
         this->throws_left = this->throws_left - 1;
+
+        ui->label_throws->setText(QString::fromStdString(std::to_string(this->throws_left)));
     }
 }
 
@@ -171,6 +177,17 @@ void MainWindow::on_pushButton_EndTurn_clicked()
         this->on_pushButton_Dice4_clicked();
         this->on_pushButton_Dice5_clicked();
 
+        if(this->current_player == this->Players.size()-1){
+            this->current_player = 0;
+        }
+        else {
+            this->current_player++;
+        }
+
+        AlternativesWindow *aw = new AlternativesWindow;
+        aw->show();
+        ui->label_playername->setText(this->Players[this->current_player].c_str());
+        ui->label_throws->setText(QString::fromStdString(std::to_string(this->throws_left)));
     }
 
 }
@@ -181,7 +198,6 @@ void MainWindow::draw_scoreboard()
                                            "Two Pairs","Three of a Kind   ","Four of a Kind ","Small Straight ","Large Straight ",
                                            "Full House", "Chance", "YATZY", "Sum", "Total"};
 
-
     for (int var = 0; var < 2; ++var) {
         QStandardItem *it1 = new QStandardItem(QObject::tr(this->Players[var].c_str()));
         this->mod->setHorizontalHeaderItem(var,it1);
@@ -191,7 +207,7 @@ void MainWindow::draw_scoreboard()
     {
         QStandardItem *it1 = new QStandardItem(QObject::tr(Combinations[idx].c_str()));
         this->mod->setVerticalHeaderItem(idx,it1);
-        const QModelIndex index = this->mod->index(idx+1, 1);
+        const QModelIndex index = this->mod->index(idx, 0);
         this->mod->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
         this->mod->setData(index, "0");
     }

@@ -4,9 +4,10 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QPushButton>
-#include <String>
+#include <string>
 #include "dice_side.h"
 #include "dice.h"
+#include "alternativeswindow.h"
 #include <vector>
 #include <cstdlib>
 #include <ctime>
@@ -32,6 +33,7 @@ public:
     std::vector<int> Dice {1, 2, 3, 4, 5};
     std::vector<int> locked_dice {0, 0, 0, 0, 0};
     std::vector<std::string> Players;
+    int current_player;
     int throws_left = 3;
     QStandardItemModel *mod = new QStandardItemModel;
     void draw_scoreboard();

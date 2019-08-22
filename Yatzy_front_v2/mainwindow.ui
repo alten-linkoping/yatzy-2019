@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1100</width>
-    <height>697</height>
+    <width>1239</width>
+    <height>848</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,8 +20,8 @@
    <widget class="QPushButton" name="pushButton_Dice1">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>350</y>
+      <x>800</x>
+      <y>570</y>
       <width>81</width>
       <height>71</height>
      </rect>
@@ -42,8 +42,8 @@ color: rgb(128, 0, 2);
    <widget class="QPushButton" name="pushButton_Dice2">
     <property name="geometry">
      <rect>
-      <x>770</x>
-      <y>350</y>
+      <x>970</x>
+      <y>570</y>
       <width>81</width>
       <height>71</height>
      </rect>
@@ -58,8 +58,8 @@ color: rgb(128, 0, 2);
    <widget class="QPushButton" name="pushButton_Dice3">
     <property name="geometry">
      <rect>
-      <x>930</x>
-      <y>350</y>
+      <x>1130</x>
+      <y>570</y>
       <width>81</width>
       <height>71</height>
      </rect>
@@ -74,8 +74,8 @@ color: rgb(128, 0, 2);
    <widget class="QPushButton" name="pushButton_Dice4">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>490</y>
+      <x>880</x>
+      <y>710</y>
       <width>81</width>
       <height>71</height>
      </rect>
@@ -90,8 +90,8 @@ color: rgb(128, 0, 2);
    <widget class="QPushButton" name="pushButton_Dice5">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>490</y>
+      <x>1060</x>
+      <y>710</y>
       <width>81</width>
       <height>71</height>
      </rect>
@@ -106,8 +106,8 @@ color: rgb(128, 0, 2);
    <widget class="QPushButton" name="pushButton_Roll">
     <property name="geometry">
      <rect>
-      <x>800</x>
-      <y>20</y>
+      <x>1010</x>
+      <y>320</y>
       <width>201</width>
       <height>91</height>
      </rect>
@@ -123,8 +123,8 @@ font: 24pt &quot;.SF NS Text&quot;;</string>
    <widget class="QTableView" name="tableView_scoreboard">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>10</y>
+      <x>50</x>
+      <y>200</y>
       <width>371</width>
       <height>601</height>
      </rect>
@@ -135,12 +135,15 @@ border-color: rgb(0, 0, 0);
 gridline-color: rgb(0, 0, 0);
 background-color: rgb(255, 255, 255);</string>
     </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::NoEditTriggers</set>
+    </property>
    </widget>
    <widget class="QPushButton" name="pushButton_EndTurn">
     <property name="geometry">
      <rect>
-      <x>590</x>
-      <y>20</y>
+      <x>800</x>
+      <y>320</y>
       <width>141</width>
       <height>91</height>
      </rect>
@@ -153,13 +156,86 @@ font: 24pt &quot;.SF NS Text&quot;;</string>
      <string>End Turn</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>10</y>
+      <width>261</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 56pt &quot;.SF NS Text&quot;;
+</string>
+    </property>
+    <property name="text">
+     <string>YATZY</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_playername">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>110</y>
+      <width>271</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 36pt &quot;.SF NS Text&quot;;
+color: rgb(128, 0, 2);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>180</y>
+      <width>191</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 36pt &quot;.SF NS Text&quot;;</string>
+    </property>
+    <property name="text">
+     <string>Throws Left:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_throws">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>180</y>
+      <width>111</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 36pt &quot;.SF NS Text&quot;;
+color: rgb(128, 0, 2);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1100</width>
+     <width>1239</width>
      <height>22</height>
     </rect>
    </property>
