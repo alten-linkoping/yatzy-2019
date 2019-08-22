@@ -39,13 +39,13 @@ def error_test():
 
 @app.route("/game", methods=["GET", "POST"])
 def new_game():
-    game_id, game = create_new_game()
     if request.json is None:
         return missing_json_data()
 
     if "player_names" not in request.json:
         return missing_json_field("player_names")
 
+    game_id, game = create_new_game()
     game.add_players(request.json["player_names"])
     game.start_game()
     
@@ -57,11 +57,10 @@ def new_game():
 @app.route("/game/<game_id>/start", methods=["GET"])
 def start_game(game_id: str):
     global games
-    game = games[game_id]
-    if not game._is_started:
-        return game.start_game()
-    else:
-        return game.current_player_name
+    game = games[game_id] 
+    return jsonify(
+            current_player= game.current_player_name if game.is_started else game.start_game()
+        )
 
 @app.route("/game/<game_id>", methods=["GET"])
 @app.route("/game/<game_id>/scores", methods=["GET"])
