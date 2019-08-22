@@ -24,6 +24,8 @@ private slots:
 
 private:
     Ui::StartWindow *ui;
+    QNetworkAccessManager *manager;
+    QNetworkRequest request;
 };
 
 #endif // STARTWINDOW_H
