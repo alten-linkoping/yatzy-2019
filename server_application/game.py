@@ -6,12 +6,12 @@ from scoresection import UpperSectionScore, LowerSectionScore
 
 
 class Game:
-    def __init__(self,bonus_calc_rule:Callable[[int], Optional[int]]):
+    def __init__(self):
         self._is_started = False
         self._is_finished = False
-        self._players: OrderedDict[str, Player] = OrderedDict()
+        self._players: Dict[str, Player] = OrderedDict()
         self.current_player_name: Optional[str] = None
-        self.bonus_calc_rule = bonus_calc_rule
+        self._player_order: Optional[Iterable[str]] = None
 
     def __repr__(self):
         return f'started: {self.is_started}\nfinished: {self.is_finished}\nplayer_names: {self.player_names}'
@@ -21,13 +21,19 @@ class Game:
             self.add_player(name)
 
     def add_player(self, name:str):
-        self._players[name] = Player(name, UpperSectionScore(self.bonus_calc_rule), LowerSectionScore())
+        self._players[name] = Player(name)
 
     def to_dict(self) -> Dict[str, Any]:
-        return dict(
+        return OrderedDict(
             player_names=self.player_names,
-            scores=[p.to_dict() for p in self._players.values()],
+            scores=self.all_player_scores(),
         )
+
+    def possible_actions(self, dice:List[int], player_name:str) -> Dict[str, int]:
+        return self._players[player_name].possible_actions(dice)
+
+    def all_player_scores(self) -> List[Dict[str,Optional[int]]]:
+        return [p.to_dict() for p in self._players.values()]
 
     def get_unused_fields(self, player_name:str) -> List[str]:
         return self._players[player_name].unused_fields
@@ -35,6 +41,33 @@ class Game:
     def player_scores(self, player_name:str) -> Optional[Dict[str, Any]]:
         player = next((p for p in self._players.values() if p.name == player_name), None)
         return player.to_dict() if player is not None else None
+
+    def start_game(self):
+        self._is_started = True
+        self._player_order = self._create_player_order_generator()
+        self.current_player_name = next(self._player_order)
+        return self.current_player_name
+
+    def make_decision(self, dice:List[int], player_name:str, decision:str) -> bool:
+        actions = self.possible_actions(dice, player_name)
+        if decision not in actions.keys():
+            print(f'Decision: {decision}')
+            print("actions:")
+            print(actions)
+            return False
+        self._players[player_name].set_field(decision, actions[decision])
+        return True
+
+
+    def next_player(self) -> Optional[str]:
+        if self._player_order is None:
+            return self.start_game()
+        else:
+            for player_name in self._player_order:
+                self.current_player_name = player_name
+                return  player_name
+        return None
+
 
     @property
     def player_names(self) -> List[str]:
@@ -49,7 +82,7 @@ class Game:
         return self._is_finished
 
 
-    def player_loop(self) -> Iterable[str]:
+    def _create_player_order_generator(self) -> Iterable[str]:
         """
             Returns a generator which returns the name of the next player 
             until all players are finished.
@@ -57,14 +90,11 @@ class Game:
         """
         def loop(player_names: Iterable[str]) -> Iterable[str]:
             saved: List[str] = []
-            self._is_started = True
             for player_name in player_names:
-                self.current_player_name = player_name
                 yield player_name
                 saved.append(player_name)
             while saved:
                 for player_name in saved:
-                    self.current_player_name = player_name
                     yield player_name
                     if self._players[player_name].is_finished():
                         saved.remove(player_name)
