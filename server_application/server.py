@@ -51,6 +51,9 @@ def new_game():
 
     if request.json is None:
         return missing_json_data()
+    else:
+        print(f'json: {request.json}')
+
 
     if "player_names" not in request.json:
         return missing_json_field("player_names")
@@ -61,7 +64,7 @@ def new_game():
     
     return jsonify(
         game_id=game_id,
-        players=game.to_dict(),
+        **game.to_dict(),
     )
 
 @app.route("/game/<game_id>/start", methods=["GET"])
@@ -128,11 +131,18 @@ def make_decision(game_id: str, player_name:str):
     if not game.make_decision(request_data["dice"], player_name, request_data["decision"]) :
         return abort(Response(f'Failed to make decision\nInput data:\n{request_data}\nPossible actions:\n{game.possible_actions(request_data["dice"],player_name)}'))
 
-    return jsonify(
-        scores = game.all_player_scores(),
-        next_player=game.next_player(),
-    )
-
+    next_player = game.next_player()
+    if next_player is not None:
+        return jsonify(
+            scores = game.all_player_scores(),
+            next_player=next_player,
+        )
+    else:
+        return jsonify(
+            scores = game.all_player_scores(),
+            next_player=next_player,
+            winner=game.winner_name()
+        )
 
 if __name__ == "__main__":
     app.run(host=app.config["HOST"], port=app.config["PORT"])

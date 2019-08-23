@@ -48,6 +48,15 @@ class Game:
         self.current_player_name = next(self._player_order)
         return self.current_player_name
 
+    def winner_name(self) -> Optional[str]:
+        winner:Optional[Player] = None
+        max_score = 0
+        for player in self._players.values():
+            if player.total_score() > max_score:
+                winner = player
+
+        return winner.name if winner is not None else None
+
     def make_decision(self, dice:List[int], player_name:str, decision:str) -> bool:
         actions = self.possible_actions(dice, player_name)
         if decision not in actions.keys():
@@ -55,7 +64,8 @@ class Game:
             print("actions:")
             print(actions)
             return False
-        self._players[player_name].set_field(decision, actions[decision])
+        action = actions[decision]
+        self._players[player_name].set_field(decision, action if action!=0 else "-")
         return True
 
 

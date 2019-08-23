@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field, fields
-from typing import Optional, Callable, List, Iterator, Tuple, Dict
+from typing import Optional, Callable, List, Iterator, Tuple, Dict, Union
 from abc import ABC, abstractmethod # Python built-in abstract class package
 from functools import partial
 import rules
@@ -33,6 +33,7 @@ class ScoreSectionBase(ABC): # type:ignore
         _total_score = 0
         for _, score in self.__iter__():
             if score is not None:
+                score = score if isinstance(score, int) else 0
                 _total_score += score
         return _total_score
 
@@ -55,15 +56,15 @@ class ScoreSectionBase(ABC): # type:ignore
 
 @dataclass(init=False, repr=False)
 class LowerSectionScore(ScoreSectionBase):
-    one_pair        :Optional[int] = field(default=None)
-    two_pairs       :Optional[int] = field(default=None)
-    three_of_a_kind :Optional[int] = field(default=None)
-    four_of_a_kind  :Optional[int] = field(default=None)
-    small_straight  :Optional[int] = field(default=None)
-    large_straight  :Optional[int] = field(default=None)
-    full_house      :Optional[int] = field(default=None)
-    chance          :Optional[int] = field(default=None)
-    yatzy           :Optional[int] = field(default=None)
+    one_pair        :Optional[Union[int,str]] = field(default=None)
+    two_pairs       :Optional[Union[int,str]] = field(default=None)
+    three_of_a_kind :Optional[Union[int,str]] = field(default=None)
+    four_of_a_kind  :Optional[Union[int,str]] = field(default=None)
+    small_straight  :Optional[Union[int,str]] = field(default=None)
+    large_straight  :Optional[Union[int,str]] = field(default=None)
+    full_house      :Optional[Union[int,str]] = field(default=None)
+    chance          :Optional[Union[int,str]] = field(default=None)
+    yatzy           :Optional[Union[int,str]] = field(default=None)
 
     def __init__(self):
         self._STANDARD_RULES_MAPPING: Dict["str", Callable[[List[int]], Optional[int]]] = dict(
@@ -89,17 +90,17 @@ class LowerSectionScore(ScoreSectionBase):
 
 @dataclass(init=False, repr=False)
 class UpperSectionScore(ScoreSectionBase):
-    once    :Optional[int] = field(default=None) 
-    twos    :Optional[int] = field(default=None)
-    threes  :Optional[int] = field(default=None)
-    fours   :Optional[int] = field(default=None)
-    fives   :Optional[int] = field(default=None)
-    sixes   :Optional[int] = field(default=None)
-    _bonus  :Optional[int] = field(default=None)
+    ones    :Optional[Union[int, str]] = field(default=None) 
+    twos    :Optional[Union[int, str]] = field(default=None)
+    threes  :Optional[Union[int, str]] = field(default=None)
+    fours   :Optional[Union[int, str]] = field(default=None)
+    fives   :Optional[Union[int, str]] = field(default=None)
+    sixes   :Optional[Union[int, str]] = field(default=None)
+    _bonus  :Optional[Union[int, str]] = field(default=None)
 
     def __init__(self):
         self._STANDARD_RULES_MAPPING: Dict["str", Callable[[List[int]], Optional[int]]] = dict(
-            once=partial(rules.lower_section, number=1),
+            ones=partial(rules.lower_section, number=1),
             twos=partial(rules.lower_section, number=2),
             threes=partial(rules.lower_section, number=3),
             fours=partial(rules.lower_section, number=4),

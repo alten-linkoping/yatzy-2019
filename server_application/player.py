@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
 from scoresection import UpperSectionScore, LowerSectionScore
 
 class Player:
@@ -41,7 +41,7 @@ class Player:
     def is_finished(self):
         return not self.unused_fields
 
-    def set_field(self, field_name: str, score:int):
+    def set_field(self, field_name: str, score:Union[int, str]):
         if field_name in self.upper_section.field_names:
             setattr(self.upper_section, field_name, score)
         elif field_name in self.lower_section.field_names:
