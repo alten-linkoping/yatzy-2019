@@ -3,14 +3,15 @@ from yatzyapi import YatzyApi
 import random
 
 REROLLS = 3
+NUMBER_OF_DICE = 5
 
-def roll_dice(number_of_dice:int=5) -> List[int]:
+def roll_dice(number_of_dice:int=NUMBER_OF_DICE) -> List[int]:
     return[random.randint(1,6) for _ in range(0,number_of_dice)]
 
 
 
 
-UPPER_SEC=["once","twos","threes","fours","fives","sixes","_bonus"]
+UPPER_SEC=["ones","twos","threes","fours","fives","sixes","_bonus"]
 LOWER_SEC=[
     "one_pair",        
     "two_pairs",       
@@ -26,18 +27,69 @@ LOWER_SEC=[
 def print_scoreboard(scores):
     global LOWER_SEC
     global UPPER_SEC
+    print("----------------------------------------")
     for player in scores:
         print(f'PLAYER: {player["name"]}')
         for name in UPPER_SEC:
             print(f'{name}: {player["upper_section"][name]}')
         print("----------------------------------------")
+        print(f'total score: {player["upper_section"]["total_score"]}')
+        print("----------------------------------------")
         for name in LOWER_SEC:
             print(f'{name}: {player["lower_section"][name]}')
+        print("----------------------------------------")
+        print(f'total score: {player["lower_section"]["total_score"]}')
+        print("----------------------------------------")
         print("========================================")
         print(f'Total Score: {player["total_score"]}')
         print("****************************************")
         print("****************************************")
 
+def print_scoreboard_matrix(scores):
+    global LOWER_SEC
+    global UPPER_SEC
+    rows= {name:[] for name in [*LOWER_SEC,*UPPER_SEC]}
+    rows["name"]=[]
+    rows["total_score_upper"]=[]
+    rows["total_score_lower"]=[]
+    rows["total_score_final"]=[]
+    for idx, player in enumerate(scores):
+        rows["name"].append(player["name"])
+        for name in UPPER_SEC:
+            val = player["upper_section"][name]
+            rows[name].append(str(val) if val is not None else "[ ]")
+        rows["total_score_upper"].append(str(player["upper_section"]["total_score"]))
+        for name in LOWER_SEC:
+            val = player["lower_section"][name]
+            rows[name].append(str(val) if val is not None else "[ ]")
+        rows["total_score_lower"].append(str(player["lower_section"]["total_score"]))
+        rows["total_score_final"].append(str(player["total_score"]))
+    
+    out = [["Score Type",*rows["name"]]]
+    for name in UPPER_SEC:
+        out.append([name,*rows[name]])
+    out.append(["total_score", *rows["total_score_upper"]])
+    for name in LOWER_SEC:
+        out.append([name,*rows[name]])
+    out.append(["total_score",*rows["total_score_lower"]])
+    out.append(["total_score", *rows["total_score_final"]])
+
+    col_width = max(len(word) for row in out for word in row) + 2  # padding
+    num_cols = len(out[0])
+    cnt = 0
+    print("".join(["-" for _ in range(col_width*num_cols)]))
+    for row in out:
+        if row[0] == "total_score":
+            cnt += 1
+            if cnt <3:
+                print("".join(["-" for _ in range(col_width*num_cols)]))
+            else:
+                print("".join(["=" for _ in range(col_width*num_cols)]))
+        print("".join(word.ljust(col_width) for word in row))
+        if row[0] == "total_score" and cnt <3:
+            print("".join(["-" for _ in range(col_width*num_cols)]))
+
+    print("".join(["-" for _ in range(col_width*num_cols)]))
 
 
 def choose_viable_number(max_val:int):
@@ -54,7 +106,8 @@ def choose_viable_number(max_val:int):
         else:
             print(f"Choose a number between 0 and {max_val}")
     return ans
-    
+
+
 def choose_from_options(options:Dict[str,int], order:List[str]):
     print("Your options are")
     print("Option number: option name - points")
@@ -111,20 +164,27 @@ if __name__ == "__main__":
         print(f"Current Player: {current_player}")
         dice: List[int] = []
         for i in range(REROLLS):
-            dice.extend(roll_dice(5-len(dice)))
+            dice.extend(roll_dice(NUMBER_OF_DICE-len(dice)))
             print_dice(dice)
             if i < REROLLS -1:
                 if not should_do_reroll():
                     break
+                
+                accaptable_keep_dice = False
+                while not accaptable_keep_dice:
+                    keep_dice_str = input("keep dice, give indices seperated by space: ")
+                    keep_dice_indices = list(map(int, keep_dice_str.split()))
+                    if not [keep_dice_idx for keep_dice_idx in keep_dice_indices if keep_dice_idx >=NUMBER_OF_DICE and keep_dice_idx >=0]:
+                        accaptable_keep_dice= True
+                    else:
+                        print(f"Values must be less than {NUMBER_OF_DICE}")
 
-                keep_dice_str = input("keep dice, give indenes seperated by space: ")
-                keep_dice = list(map(int, keep_dice_str.split()))
-                print(f'Keeping dice: {keep_dice}')
-                dice = [dice[idx] for idx in keep_dice]
+                print(f'Keeping dice: {keep_dice_indices}')
+                dice = [dice[idx] for idx in keep_dice_indices]
 
         print(f'Your final dice are: {dice}')
 
         chosen_option = choose_from_options(api.get_options(game_id,current_player, dice), [*LOWER_SEC, *UPPER_SEC])
         print(f'You choosed {chosen_option}')
         current_player, scores = api.submit_decision(game_id, current_player,dice, chosen_option)
-        print_scoreboard(scores)
+        print_scoreboard_matrix(scores)
