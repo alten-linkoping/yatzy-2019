@@ -12,7 +12,7 @@
 #include <QJsonObject>
 
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QJsonObject gameSetup, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -25,34 +25,28 @@ MainWindow::MainWindow(QWidget *parent) :
                 qDebug() << reply->errorString();
                 return;
             }
-
             QString answer = reply->readAll();
 
             qDebug() << answer;
 
             QJsonDocument json = QJsonDocument::fromJson(answer.toUtf8());
             QJsonObject jsonObject = json.object();
-            QJsonArray jsonArrayUpper = jsonObject["msg"].toArray();
+            this->latestReply = jsonObject;
+        }
+    );
 
-           qDebug() << jsonObject["msg"];
-
-
-
-           // QJsonObject ar1 = jsonArrayUpper.at(0).toObject();
-           // qDebug() << ar1["chance"].toDouble();
-
-
-
-
-    this->Players.push_back("Emma");
-    this->Players.push_back("Liv");
-
-    this->draw_scoreboard();
-    this->current_player = 0;
-    ui->label_playername->setText(this->Players[this->current_player].c_str());
-    ui->label_throws->setText(QString::fromStdString(std::to_string(this->throws_left)));
+    for(auto name : gameSetup["player_names"].toArray()){
+        this->Players.push_back(name.toString());
     }
-);
+
+    this->game_id = gameSetup["game_id"].toString();
+    this->draw_scoreboard();
+    if (Players.size()==0){
+        QApplication::quit();
+    }
+    this->current_player = 0;
+    ui->label_playername->setText(this->Players[this->current_player]);
+    ui->label_throws->setText(QString::fromStdString(std::to_string(this->throws_left)));
 }
 
 MainWindow::~MainWindow()
@@ -75,19 +69,6 @@ static Dice_side DS6 {"border-image: url(:/Images/Images/Alea_6.png); color: rgb
 
 void MainWindow::roll_dice()
 {
-    request.setUrl(QUrl("http://127.0.0.1:5000/"));
-    request.setHeader( QNetworkRequest::ContentTypeHeader, "/" );
-
-
-
-
-    QByteArray dice;
-
-
-
-
-
-
     srand(time(nullptr));
 
     for (int idx = 0; idx < 5; ++idx)
@@ -95,11 +76,9 @@ void MainWindow::roll_dice()
         if (this->locked_dice[idx] == 0)
         {
             this->Dice[idx] = std::rand() %6 + 1;
-
-            dice.push_back(this->Dice[idx]);
         }
     }
-    manager->post(request, dice);
+
 }
 
 void MainWindow::draw_dice()
@@ -214,8 +193,31 @@ void MainWindow::on_pushButton_Dice5_clicked()
 
 void MainWindow::on_pushButton_EndTurn_clicked()
 {
+
+
     if(this->throws_left != 3)
     {
+        request.setUrl(QUrl("http://10.46.52.103:5000/game/" + game_id +"/" + this->Players[current_player] + "/combinations"));
+        request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
+
+        QJsonObject diceOb;
+        QJsonArray dice;
+
+
+        for (int idx = 0; idx < 5; ++idx)
+        {
+            dice.push_back(this->Dice[idx]);
+        }
+
+        diceOb.insert("dice",dice);
+
+
+        QEventLoop loop{};
+        connect(manager,SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+        manager->post(request, QJsonDocument(diceOb).toJson());
+        loop.exec();
+
+
         //Skicka tärningsvärdena till servern
         this->throws_left = 3;
 
@@ -228,6 +230,25 @@ void MainWindow::on_pushButton_EndTurn_clicked()
         this->on_pushButton_Dice4_clicked();
         this->on_pushButton_Dice5_clicked();
 
+
+
+        AlternativesWindow *aw = new AlternativesWindow(this->latestReply, this->combination_choices);
+
+        connect(aw,SIGNAL(choice_made()), &loop, SLOT(quit()));
+        aw->show();
+        loop.exec();
+
+        request.setUrl(QUrl("http://10.46.52.103:5000/game/" + game_id +"/" + this->Players[current_player] + "/make_decision"));
+        request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
+        diceOb.insert("decision", aw->clickedOption);
+
+        QEventLoop loop2{};
+        connect(manager,SIGNAL(finished(QNetworkReply*)), &loop2, SLOT(quit()));
+        manager->post(request, QJsonDocument(diceOb).toJson());
+        loop2.exec();
+//        qDebug() << "CHOICE MADE!!!!!!!: " << latestReply << endl;
+        this->draw_scoreboard(latestReply);
+
         if(this->current_player == this->Players.size()-1){
             this->current_player = 0;
         }
@@ -235,32 +256,73 @@ void MainWindow::on_pushButton_EndTurn_clicked()
             this->current_player++;
         }
 
-        AlternativesWindow *aw = new AlternativesWindow;
-        aw->show();
-        ui->label_playername->setText(this->Players[this->current_player].c_str());
+        ui->label_playername->setText(this->Players[this->current_player]);
         ui->label_throws->setText(QString::fromStdString(std::to_string(this->throws_left)));
+
     }
 
+
+
+}
+
+
+void MainWindow::draw_scoreboard(QJsonObject jsonObj){
+    QJsonArray scores = jsonObj["scores"].toArray();
+        qDebug() << "JSON OBJECT " << scores << endl;
+        qDebug() << jsonObj << endl;
+    for (int idx_x = 0; idx_x < this->Players.size(); ++idx_x) {
+
+        QJsonObject player_score = scores[idx_x].toObject();
+        qDebug() << "Player score" << player_score << endl;
+         qDebug() << "__***--- > " << this->Players[idx_x] << "  " << player_score["name"].toString() << endl;
+
+        QJsonObject upper_sec_json = player_score["upper_section"].toObject();
+        for (int idx_y = 0; idx_y < upper_section.size(); idx_y++)
+        {
+            const QModelIndex index = this->mod->index(idx_y, idx_x);
+            this->mod->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
+            if(upper_sec_json[upper_section[idx_y]].isString()){
+                this->mod->setData(index, upper_sec_json[upper_section[idx_y]].toString());
+            }else{
+                this->mod->setData(index, upper_sec_json[upper_section[idx_y]].toInt());
+            }
+        }
+        QJsonObject lower_sec_json = player_score["lower_section"].toObject();
+        for (int idx_y = 0; idx_y < lower_section.size(); idx_y++)
+        {
+            const QModelIndex index = this->mod->index(upper_section.size()+idx_y, idx_x);
+            this->mod->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
+            if(lower_sec_json[lower_section[idx_y]].isString()){
+                this->mod->setData(index, lower_sec_json[lower_section[idx_y]].toString());
+            }else{
+                this->mod->setData(index, lower_sec_json[lower_section[idx_y]].toInt());
+            }
+        }
+        const QModelIndex index = this->mod->index(upper_section.size()+lower_section.size(), idx_x);
+        this->mod->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
+        this->mod->setData(index, player_score[total_score].toInt());
+    }
+
+
+    ui->tableView_scoreboard->setModel(this->mod);
+    ui->tableView_scoreboard->show();
 }
 
 void MainWindow::draw_scoreboard()
 {
-    std::vector<std::string> Combinations {"Ones", "Twos", "Threes", "Fours", "Fives", "Sixes", "Bonus","Sum","One Pair",
-                                           "Two Pairs","Three of a Kind   ","Four of a Kind ","Small Straight ","Large Straight ",
-                                           "Full House", "Chance", "YATZY", "Sum", "Total"};
 
-    for (int var = 0; var < 2; ++var) {
-        QStandardItem *it1 = new QStandardItem(QObject::tr(this->Players[var].c_str()));
+    for (int var = 0; var < this->Players.size(); ++var) {
+        QStandardItem *it1 = new QStandardItem(this->Players[var]);
         this->mod->setHorizontalHeaderItem(var,it1);
     }
 
-    for (int idx = 0; idx < Combinations.size(); idx++)
+    for (int idx = 0; idx < combinations.size(); idx++)
     {
-        QStandardItem *it1 = new QStandardItem(QObject::tr(Combinations[idx].c_str()));
+        QStandardItem *it1 = new QStandardItem(combinations[idx]);
         this->mod->setVerticalHeaderItem(idx,it1);
-        const QModelIndex index = this->mod->index(idx, 0);
-        this->mod->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
-        this->mod->setData(index, "0");
+        //const QModelIndex index = this->mod->index(idx, 0);
+        //this->mod->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
+        //this->mod->setData(index, "0");
     }
 
     ui->tableView_scoreboard->setModel(this->mod);

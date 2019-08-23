@@ -16,7 +16,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-
+#include <QJsonObject>
 namespace Ui {
 class MainWindow;
 }
@@ -26,7 +26,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow( QJsonObject gameSetup, QWidget *parent = nullptr);
     ~MainWindow();
 
 
@@ -35,11 +35,12 @@ public:
     void roll_dice();
     std::vector<int> Dice {1, 2, 3, 4, 5};
     std::vector<int> locked_dice {0, 0, 0, 0, 0};
-    std::vector<std::string> Players;
+    std::vector<QString> Players;
     int current_player;
     int throws_left = 3;
     QStandardItemModel *mod = new QStandardItemModel;
     void draw_scoreboard();
+    void draw_scoreboard(QJsonObject);
 
 private slots:
     void on_pushButton_Roll_clicked();
@@ -60,6 +61,19 @@ private:
     Ui::MainWindow *ui;
     QNetworkAccessManager *manager;
     QNetworkRequest request;
+    QString game_id;
+    std::vector<QString> combinations {"ones", "twos", "threes", "fours", "fives", "sixes", "_bonus","total_score","one_pair",
+                                           "two_pairs","three_of_a_kind","four_of_a_kind","small_straight","large_straight",
+                                           "full_house", "chance", "yatzy", "total_score", "total_score"};
+    std::vector<QString> combination_choices {"ones", "twos", "threes", "fours", "fives", "sixes","one_pair",
+                                           "two_pairs","three_of_a_kind","four_of_a_kind","small_straight","large_straight",
+                                           "full_house", "chance", "yatzy"};
+    std::vector<QString> upper_section {"ones", "twos", "threes", "fours", "fives", "sixes", "_bonus","total_score"};
+    std::vector<QString> lower_section {"one_pair","two_pairs","three_of_a_kind","four_of_a_kind","small_straight","large_straight",
+                                           "full_house", "chance", "yatzy", "total_score"};
+    QString total_score{"total_score"};
+
+    QJsonObject latestReply;
 };
 
 #endif // MAINWINDOW_H

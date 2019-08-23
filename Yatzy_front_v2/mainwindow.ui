@@ -106,9 +106,9 @@ color: rgb(128, 0, 2);
    <widget class="QPushButton" name="pushButton_Roll">
     <property name="geometry">
      <rect>
-      <x>1010</x>
+      <x>980</x>
       <y>320</y>
-      <width>201</width>
+      <width>231</width>
       <height>91</height>
      </rect>
     </property>
@@ -142,9 +142,9 @@ background-color: rgb(255, 255, 255);</string>
    <widget class="QPushButton" name="pushButton_EndTurn">
     <property name="geometry">
      <rect>
-      <x>800</x>
+      <x>770</x>
       <y>320</y>
-      <width>141</width>
+      <width>171</width>
       <height>91</height>
      </rect>
     </property>

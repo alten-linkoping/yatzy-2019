@@ -24,26 +24,58 @@ StartWindow::StartWindow(QWidget *parent) :
 
             QJsonDocument json = QJsonDocument::fromJson(answer.toUtf8());
             QJsonObject jsonObject = json.object();
-            QJsonArray jsonArrayUpper = jsonObject["msg"].toArray();
+            qDebug()<< "JSON OBJECT" << jsonObject << endl;
 
-           qDebug() << jsonObject["msg"];
-    }
+            this->gameSetup = jsonObject;
+
+        }
 );
 }
-
 StartWindow::~StartWindow()
 {
     delete ui;
     delete manager;
 }
+/*
+QByteArray postData;
+    QJsonObject qJson;
 
+    QJsonArray diceDataArray;
+    for(int i : diceData){
+        diceDataArray.append(QString::number(i));
+    }
+
+    qJson.insert("dice",diceDataArray);
+    qJson.insert("player_id",playerId);
+
+    QNetworkRequest request(qurl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
+
+    return network_manager.post(request,QJsonDocument(qJson).toJson());
+*/
 
 void StartWindow::on_pushButton_PLAY_clicked()
 {
     QString Player = ui->lineEdit->text();
     this->Players.push_back(Player.toStdString());
 
-    MainWindow *w = new MainWindow;
+    request.setUrl(QUrl("http://10.46.52.103:5000/game"));
+    request.setHeader( QNetworkRequest::ContentTypeHeader,"application/json");
+
+    QJsonObject qJson;
+    QJsonArray diceDataArray;
+
+    for(std::string i : this->Players){
+        diceDataArray.append(QString::fromStdString(i));
+    }
+
+    qJson.insert("player_names", diceDataArray);
+    QEventLoop loop{};
+    connect(manager,SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+    manager->post(request, QJsonDocument(qJson).toJson());
+    loop.exec();
+    qDebug() << "GENA SETIP --->>> " << this->gameSetup << endl;
+    MainWindow *w = new MainWindow(this->gameSetup);
     w->show();
     this->hide();
 }
@@ -53,14 +85,7 @@ void StartWindow::on_pushButton_ADD_clicked()
     QString Player = ui->lineEdit->text();
     this->Players.push_back(Player.toStdString());
 
-    request.setUrl(QUrl("http://127.0.0.1:5000/"));
-    request.setHeader( QNetworkRequest::ContentTypeHeader, "/" );
-
-    QByteArray dice;
-
-
-    manager->post(request, dice);
-
+    this->playersTosend.append(Player.toUtf8());
 
     ui->lineEdit->clear();
 }

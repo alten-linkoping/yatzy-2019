@@ -1,24 +1,36 @@
 #include "alternativeswindow.h"
 #include "ui_alternativeswindow.h"
 #include <QRadioButton>
+#include <QButtonGroup>
 #include <QWidget>
 #include <QLayout>
+#include <QDebug>
 
 
-AlternativesWindow::AlternativesWindow(QWidget *parent) :
+AlternativesWindow::AlternativesWindow(QJsonObject combinationsObject, std::vector<QString> combinations, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AlternativesWindow)
 {
     ui->setupUi(this);
-    this->alternatives = {"Alt1", "Alt 2", "Alt 3"};
+    //this->alternatives = {"Alt1", "Alt 2", "Alt 3"};
+    this->alternatives.clear();
+    QJsonObject comb_field = combinationsObject["combinations"].toObject();
+    for (QString rule: combinations){
+        if(comb_field.contains(rule)){
+            this->alternatives.push_back(rule);
+        }
+    }
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    QButtonGroup* button_grp = new QButtonGroup(this);
 
-    QVBoxLayout *layout = new QVBoxLayout;
-
+    qDebug() << combinationsObject << endl;
+    qDebug() << comb_field << endl;
+    connect(button_grp, SIGNAL(buttonClicked(int)), this, SLOT(is_clicked(int)));
     for (int idx = 0; idx < this->alternatives.size(); idx++) {
         QRadioButton *RButton = new QRadioButton(ui->widget);
-        RButton->setText(tr(this->alternatives[idx].c_str()));
-        //RButton->show();
-        connect(RButton, SIGNAL(clicked()), this, SLOT(is_clicked()));
+        button_grp->addButton(RButton, idx);
+        QString rule_name{this->alternatives[idx]};
+        RButton->setText(rule_name + ": " + QString::number(comb_field[rule_name].toInt()));
         layout->addWidget(RButton);
     }
     ui->widget->setLayout(layout);
@@ -31,8 +43,9 @@ AlternativesWindow::~AlternativesWindow()
     delete ui;
 }
 
-void AlternativesWindow::is_clicked()
+void AlternativesWindow::is_clicked(int button_id)
 {
+    this->clickedOption = this->alternatives[button_id];
     this->clicked = 1;
 }
 
@@ -43,6 +56,7 @@ void AlternativesWindow::on_buttonBox_accepted()
     // else felmeddelande
     if(this->clicked == 1)
     {
+        emit(choice_made());
         this->close();
     }
 

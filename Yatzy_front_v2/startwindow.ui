@@ -70,9 +70,9 @@ color: rgb(0, 0, 0);</string>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>340</x>
+      <x>310</x>
       <y>0</y>
-      <width>241</width>
+      <width>331</width>
       <height>121</height>
      </rect>
     </property>
@@ -90,7 +90,7 @@ color: rgb(255, 255, 255);</string>
       <x>360</x>
       <y>180</y>
       <width>181</width>
-      <height>61</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -111,12 +111,6 @@ color: rgb(255, 255, 255);</string>
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuYatzy">
-    <property name="title">
-     <string>Yatzy</string>
-    </property>
-   </widget>
-   <addaction name="menuYatzy"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
