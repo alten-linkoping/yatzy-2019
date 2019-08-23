@@ -141,7 +141,7 @@ def should_do_reroll() -> bool:
 
 
 if __name__ == "__main__":
-    api = YatzyApi("http://10.46.52.103:5000")
+    api = YatzyApi("http://127.0.0.1:5000")
 
     player_names_str = input("Add player names seperated with space: ")
     player_names: List[str] = []
